@@ -11,7 +11,6 @@ import com.udacity.vehicles.service.CarService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,8 +25,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -85,7 +83,7 @@ public class CarControllerTest {
                         .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isCreated());
 
-        verify(carService, times(1)).save((ArgumentMatchers.any(Car.class)));
+        verify(carService, times(1)).save(any(Car.class));
     }
 
     /**
@@ -121,7 +119,10 @@ public class CarControllerTest {
 
         mvc.perform(get("/cars/" + String.valueOf(id)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType));
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.price", is("€25000")))
+                .andExpect(jsonPath("$.location.lat", is(40.73061)))
+                .andExpect(jsonPath("$.location.lon", is(-73.935242)));
 
         verify(carService, times(1)).findById(id);
     }
@@ -135,7 +136,7 @@ public class CarControllerTest {
     public void updateCar() throws Exception {
         Car car = carService.save(getCar());
         Long id = car.getId();
-        car.setPrice("25000");
+        car.setPrice("€26000");
 
         mvc.perform(
                 put(new URI("/cars/" + String.valueOf(id)))
@@ -143,9 +144,9 @@ public class CarControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.price", is("25000")));
+                .andExpect(jsonPath("$.price", is("€26000")));
 
-        verify(carService, times(2)).save((ArgumentMatchers.any(Car.class)));
+        verify(carService, times(2)).save(any(Car.class));
     }
 
     /**
@@ -171,6 +172,7 @@ public class CarControllerTest {
     private Car getCar() {
         Car car = new Car();
         car.setLocation(new Location(40.730610, -73.935242));
+        car.setPrice("€25000");
         Details details = new Details();
         Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
         details.setManufacturer(manufacturer);
