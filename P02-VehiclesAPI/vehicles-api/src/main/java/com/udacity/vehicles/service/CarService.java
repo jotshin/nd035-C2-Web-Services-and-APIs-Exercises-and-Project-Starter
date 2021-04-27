@@ -22,10 +22,6 @@ public class CarService {
     private final PriceClient priceClient;
 
     public CarService(CarRepository repository, MapsClient mapsClient, PriceClient priceClient) {
-        /**
-         * TODO: Add the Maps and Pricing Web Clients you create
-         *   in `VehiclesApiApplication` as arguments and set them here.
-         */
         this.repository = repository;
         this.mapsClient = mapsClient;
         this.priceClient = priceClient;
