@@ -43,7 +43,7 @@ public class CarService {
      * @return the requested car's information, including location and price
      */
     public Car findById(Long id) {
-        Optional<Car> optionalCar = Optional.ofNullable(repository.getOne(id));
+        Optional<Car> optionalCar = repository.findById(id);
         Car car = optionalCar.orElseThrow(CarNotFoundException::new);
 
         /**
